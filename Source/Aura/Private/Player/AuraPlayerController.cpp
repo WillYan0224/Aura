@@ -4,10 +4,70 @@
 #include "Player/AuraPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Interaction/EnemyInterface.h"
+
 AAuraPlayerController::AAuraPlayerController()
 {
 	bReplicates = true;
 
+}
+
+void AAuraPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+	CursorTrace();
+}
+
+void AAuraPlayerController::CursorTrace()
+{
+	FHitResult CursorHit;
+	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	if (!CursorHit.bBlockingHit) return;
+
+	// TScriptInterface
+	LastActor = CurrentActor;
+	CurrentActor = CursorHit.GetActor();
+	/*
+	 * Line Trace from cursor
+	 * A. LastActor == null && CurrentActor == null
+	 *		- Do nothing
+	 * B. LastActor == null && CurrentActor != null
+	 * 		- Call HighlightActor on CurrentActor
+	 * C. LastActor != null && CurrentActor == null
+	 * 		- Call UnhighlightActor on LastActor
+	 * D. LastActor != null && CurrentActor != null && LastActor != CurrentActor (Both valid)
+	 * 		- Call UnhighlightActor on LastActor
+	 * 		- Call HighlightActor on CurrentActor
+	 * E. LastActor != null && CurrentActor != null && LastActor == CurrentActor (Both valid)
+	 * 		- Do nothing
+	 */
+	if (LastActor == nullptr)
+	{
+		if (CurrentActor != nullptr)
+		{
+			// case B
+			CurrentActor->HighlightActor();
+		}
+		// case A - Do nothing
+	}
+	else // Both Vaild
+	{
+		if (CurrentActor == nullptr)
+		{
+			// case C
+			LastActor->UnhighlightActor();
+		}
+		else
+		{
+			if (LastActor != CurrentActor)
+			{
+				// case D
+				LastActor->UnhighlightActor();
+				CurrentActor->HighlightActor();
+			}
+		// case E - Do nothing
+		}
+	}
 }
 
 void AAuraPlayerController::BeginPlay()
@@ -50,6 +110,6 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
-
 }
+
 

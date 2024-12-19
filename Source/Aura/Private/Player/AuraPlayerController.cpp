@@ -8,8 +8,9 @@
 
 AAuraPlayerController::AAuraPlayerController()
 {
+	// Enable replication: data is synchronized from server to client. 1-Way transfer
+	// Clients cannot modify replicated properties, as the server is authoritative
 	bReplicates = true;
-
 }
 
 void AAuraPlayerController::PlayerTick(float DeltaTime)

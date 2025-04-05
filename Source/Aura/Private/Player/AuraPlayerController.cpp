@@ -4,7 +4,9 @@
 #include "Player/AuraPlayerController.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Character/AuraCharacter.h"
 #include "Interaction/EnemyInterface.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 AAuraPlayerController::AAuraPlayerController()
 {
@@ -97,10 +99,18 @@ void AAuraPlayerController::SetupInputComponent()
 
 	UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Move);
+	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AAuraPlayerController::Jump);
 }
 
 void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 {
+	APawn* ControlledPawn = GetPawn<APawn>();
+	ACharacter* ControlledCharacter = Cast<ACharacter>(ControlledPawn);
+	if (ControlledCharacter && ControlledCharacter->GetCharacterMovement()->IsFalling())
+	{
+		return; // Ignore input if character is falling
+	}
+	
 	const FVector2D& InputAxisVector = InputActionValue.Get<FVector2D>();
 	const FRotator Rotation = GetControlRotation();
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -108,11 +118,18 @@ void AAuraPlayerController::Move(const FInputActionValue& InputActionValue)
 	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-	if (APawn* ControlledPawn = GetPawn<APawn>())
+	if (ControlledPawn)
 	{
 		ControlledPawn->AddMovementInput(ForwardDirection, InputAxisVector.Y);
 		ControlledPawn->AddMovementInput(RightDirection, InputAxisVector.X);
 	}
 }
 
+void AAuraPlayerController::Jump()
+{
+	if (ACharacter* ControlledCharacter = Cast<ACharacter>(GetPawn()))
+	{
+		ControlledCharacter->Jump();
+	}
+}
 

@@ -12,8 +12,7 @@
 UAuraAttributeSet::UAuraAttributeSet()
 {
 	// ATTRIBUTE_ACCESSORS will automatically generate the following functions:
-	InitHealth(50.0f);
-	InitMana(25.0f);
+	
 }
 
 void UAuraAttributeSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const

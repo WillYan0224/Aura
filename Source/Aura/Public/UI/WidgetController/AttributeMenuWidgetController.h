@@ -24,7 +24,7 @@ public:
 	virtual void BroadcastInitialValues() override;
 
 	UPROPERTY(BlueprintAssignable, Category= "GAS|Attributes")
-	FAttributeInfoSignature AuraAttributeInfoDelegate;
+	FAttributeInfoSignature AttributeInfoDelegate;
 
 protected:
 

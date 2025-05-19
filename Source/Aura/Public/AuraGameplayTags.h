@@ -32,8 +32,8 @@ public:
 	FGameplayTag Attribute_Secondary_DirectHitDamage;
 	FGameplayTag Attribute_Secondary_HealthRegeneration;
 	FGameplayTag Attribute_Secondary_ManaRegeneration;
-	FGameplayTag Attribute_MaxMana;
-	FGameplayTag Attribute_MaxHealth;
+	FGameplayTag Attribute_Secondary_MaxMana;
+	FGameplayTag Attribute_Secondary_MaxHealth;
 	
 	
 private:

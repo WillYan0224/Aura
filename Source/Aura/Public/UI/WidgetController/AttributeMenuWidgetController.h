@@ -27,7 +27,6 @@ public:
 	FAttributeInfoSignature AttributeInfoDelegate;
 
 protected:
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UAttributeInfo> AttributeInfo;
 };

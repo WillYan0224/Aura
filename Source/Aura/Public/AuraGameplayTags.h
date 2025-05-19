@@ -8,7 +8,8 @@
 /**
  * AuraGameplayTags
  * 
- * Singleton class to manage gameplay tags in the Aura project
+ * POD-Style Singleton class to manage gameplay tags in the Aura project
+ * Doesn't have lazy new instance creation, but it is not needed in this case
  */
 
 struct FAuraGameplayTags

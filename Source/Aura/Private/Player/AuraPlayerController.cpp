@@ -4,10 +4,12 @@
 #include "Player/AuraPlayerController.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AuraGameplayTags.h"
 #include "EnhancedInputSubsystems.h"
 #include "AbilitySystem/AuraAbilitySystemComponent.h"
 #include "Input/AuraEnhancedInputComponent.h"
 #include "Character/AuraCharacter.h"
+#include "Components/SplineComponent.h"
 #include "Interaction/EnemyInterface.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -17,6 +19,8 @@ AAuraPlayerController::AAuraPlayerController()
 	// Enable replication: data is synchronized from server to client. 1-Way transfer
 	// Clients cannot modify replicated properties, as the server is authoritative
 	bReplicates = true;
+
+	Spline = CreateDefaultSubobject<USplineComponent>("SplineComponent");
 }
 
 void AAuraPlayerController::PlayerTick(float DeltaTime)
@@ -80,6 +84,11 @@ void AAuraPlayerController::CursorTrace()
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
 	// GEngine->AddOnScreenDebugMessage(1, 2.5f, FColor::Red, *InputTag.ToString());
+	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	{
+		bTargeting = CurrentActor ? true : false;
+		bAutoRunning = false;
+	}
 }
 
 void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
@@ -90,8 +99,40 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 
 void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
-	if (!GetAuraAbilitySystemComponent()) return;
-	GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
+	{
+		if (GetAuraAbilitySystemComponent())
+		{
+			GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+		}
+		return;
+	}
+	
+	if (bTargeting)
+	{
+		if (GetAuraAbilitySystemComponent())
+		{
+			GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
+		}
+	}
+	else
+	{
+		// should be locked for RMB < Will see >
+		FollowTime += GetWorld()->GetDeltaSeconds();
+		FHitResult CursorHit;
+		if (GetHitResultUnderCursor(ECC_Visibility, false, CursorHit))
+		{
+			if (CursorHit.bBlockingHit)
+			{
+				CachedDestination = CursorHit.ImpactPoint;
+			}
+		}
+		if (APawn* ControlledPawn = GetPawn())
+		{
+			const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
+			ControlledPawn->AddMovementInput(WorldDirection, 1.0f);
+		}
+	}
 }
 
 UAuraAbilitySystemComponent* AAuraPlayerController::GetAuraAbilitySystemComponent()

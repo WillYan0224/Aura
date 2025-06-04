@@ -42,7 +42,7 @@ void UAuraAbilitySystemComponent::AbilityInputTagHeld(const FGameplayTag& InputT
 	}
 }
 
-void UAuraAbilitySystemComponent::AbilityLocalInputReleased(const FGameplayTag& InputTag)
+void UAuraAbilitySystemComponent::AbilityInputTagReleased(const FGameplayTag& InputTag)
 {
 	if (!InputTag.IsValid()) return;
 	for (auto& AbilitySpec : GetActivatableAbilities())

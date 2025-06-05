@@ -12,7 +12,6 @@
 #include "Input/AuraEnhancedInputComponent.h"
 #include "Character/AuraCharacter.h"
 #include "Components/SplineComponent.h"
-#include "Framework/Application/AnalogCursor.h"
 #include "Interaction/EnemyInterface.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -44,16 +43,12 @@ void AAuraPlayerController::AutoRun()
 
 		// auto running tolerance
 		const float DistanceToDestination = FVector::Dist(LocationOnSpline, CachedDestination);
-		if (DistanceToDestination <= AutoRunAcceptanceRadius)
-		{
-			bAutoRunning = false;
-		}
+		if (DistanceToDestination <= AutoRunAcceptanceRadius)	bAutoRunning = false;
 	}
 }
 
 void AAuraPlayerController::CursorTrace()
 {
-	FHitResult CursorHit;
 	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
 	if (!CursorHit.bBlockingHit) return;
 
@@ -74,32 +69,10 @@ void AAuraPlayerController::CursorTrace()
 	 * E. LastActor != null && CurrentActor != null && LastActor == CurrentActor (Both valid)
 	 * 		- Do nothing
 	 */
-	if (LastActor == nullptr)
+	if (LastActor != CurrentActor)
 	{
-		if (CurrentActor != nullptr)
-		{
-			// case B
-			CurrentActor->HighlightActor();
-		}
-		// case A - Do nothing
-	}
-	else // Both Valid
-	{
-		if (CurrentActor == nullptr)
-		{
-			// case C
-			LastActor->UnhighlightActor();
-		}
-		else
-		{
-			if (LastActor != CurrentActor)
-			{
-				// case D
-				LastActor->UnhighlightActor();
-				CurrentActor->HighlightActor();
-			}
-		// case E - Do nothing
-		}
+		if (LastActor) LastActor->UnhighlightActor();
+		if (CurrentActor) CurrentActor->HighlightActor();
 	}
 }
 
@@ -117,27 +90,20 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 {
 	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		if (GetAuraAbilitySystemComponent())
-		{
-			GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
-		}
+		if (GetAuraAbilitySystemComponent())	GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
 		return;
 	}
 
 	if (bTargeting)
 	{
-		if (GetAuraAbilitySystemComponent())
-		{
-			GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
-		}
+		if (GetAuraAbilitySystemComponent())	GetAuraAbilitySystemComponent()->AbilityInputTagReleased(InputTag);
 	}
 	else
 	{
-		APawn* ControlledPawn = GetPawn<APawn>();
+		const APawn* ControlledPawn = GetPawn<APawn>();
 		if (FollowTime <= ShortPressThreshold && ControlledPawn)
 		{
-			UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination, ControlledPawn);
-			if (NavPath)
+			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, ControlledPawn->GetActorLocation(), CachedDestination))
 			{
 				Spline->ClearSplinePoints();
 				for (const FVector& PointLocation : NavPath->PathPoints)
@@ -163,30 +129,20 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 {
 	if (!InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
-		if (GetAuraAbilitySystemComponent())
-		{
-			GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
-		}
+		if (GetAuraAbilitySystemComponent())	GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
 		return;
 	}
 	
 	if (bTargeting)
 	{
-		if (GetAuraAbilitySystemComponent())
-		{
-			GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
-		}
+		if (GetAuraAbilitySystemComponent())	GetAuraAbilitySystemComponent()->AbilityInputTagHeld(InputTag);
 	}
 	else
 	{
 		FollowTime += GetWorld()->GetDeltaSeconds();
-		FHitResult CursorHit;
-		if (GetHitResultUnderCursor(ECC_Visibility, false, CursorHit))
+		if (CursorHit.bBlockingHit)
 		{
-			if (CursorHit.bBlockingHit)
-			{
-				CachedDestination = CursorHit.ImpactPoint;
-			}
+			CachedDestination = CursorHit.ImpactPoint;
 		}
 		if (APawn* ControlledPawn = GetPawn())
 		{
@@ -198,11 +154,7 @@ void AAuraPlayerController::AbilityInputTagHeld(FGameplayTag InputTag)
 
 UAuraAbilitySystemComponent* AAuraPlayerController::GetAuraAbilitySystemComponent()
 {
-	if (AuraAbilitySystemComponent == nullptr)
-	{
-		AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
-	}
-	
+	if (AuraAbilitySystemComponent == nullptr)	AuraAbilitySystemComponent = Cast<UAuraAbilitySystemComponent>(UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(GetPawn<APawn>()));
 	return AuraAbilitySystemComponent;
 }
 

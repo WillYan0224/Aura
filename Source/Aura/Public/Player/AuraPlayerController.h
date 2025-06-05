@@ -47,7 +47,7 @@ private:
 	// Wrapper 
 	TScriptInterface<IEnemyInterface> LastActor;
 	TScriptInterface<IEnemyInterface> CurrentActor;
-
+	FHitResult CursorHit;
 
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
@@ -72,7 +72,7 @@ private:
 	float AutoRunAcceptanceRadius = 20.f;
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
-
+	
 	void AutoRun();
 };
 

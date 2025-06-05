@@ -12,6 +12,7 @@
 #include "Input/AuraEnhancedInputComponent.h"
 #include "Character/AuraCharacter.h"
 #include "Components/SplineComponent.h"
+#include "Framework/Application/AnalogCursor.h"
 #include "Interaction/EnemyInterface.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -29,6 +30,25 @@ void AAuraPlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
 	CursorTrace();
+	AutoRun();
+}
+
+void AAuraPlayerController::AutoRun()
+{
+	if (!bAutoRunning) return;
+	if (APawn* ControlledPawn = GetPawn<APawn>())
+	{
+		const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
+		const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationOnSpline, ESplineCoordinateSpace::World);
+		ControlledPawn->AddMovementInput(Direction, 1.0f);
+
+		// auto running tolerance
+		const float DistanceToDestination = FVector::Dist(LocationOnSpline, CachedDestination);
+		if (DistanceToDestination <= AutoRunAcceptanceRadius)
+		{
+			bAutoRunning = false;
+		}
+	}
 }
 
 void AAuraPlayerController::CursorTrace()
@@ -125,7 +145,12 @@ void AAuraPlayerController::AbilityInputTagReleased(FGameplayTag InputTag)
 					Spline->AddSplinePoint(PointLocation, ESplineCoordinateSpace::World);
 					DrawDebugSphere(GetWorld(), PointLocation, 10.f, 12, FColor::Green, false, 5.f);
 				}
-				bAutoRunning = true;
+				// Prevent auto running if hit the NavMesh bound volume
+				if (NavPath->PathPoints.Num() > 0)
+				{
+					CachedDestination = NavPath->PathPoints.Last();
+					bAutoRunning = true;
+				}
 			}
 		}
 		// reset tracking after release
@@ -180,7 +205,6 @@ UAuraAbilitySystemComponent* AAuraPlayerController::GetAuraAbilitySystemComponen
 	
 	return AuraAbilitySystemComponent;
 }
-
 
 void AAuraPlayerController::BeginPlay()
 {

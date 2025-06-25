@@ -79,8 +79,8 @@ void AAuraPlayerController::CursorTrace()
 void AAuraPlayerController::AbilityInputTagPressed(FGameplayTag InputTag)
 {
 	// GEngine->AddOnScreenDebugMessage(1, 2.5f, FColor::Red, *InputTag.ToString());
-	if (InputTag.MatchesTagExact(FAuraGameplayTags::Get().InputTag_LMB))
 	{
+		GEngine->AddOnScreenDebugMessage(1, 2.5f, FColor::Green, *InputTag.ToString());
 		bTargeting = CurrentActor ? true : false;
 		bAutoRunning = false;
 	}

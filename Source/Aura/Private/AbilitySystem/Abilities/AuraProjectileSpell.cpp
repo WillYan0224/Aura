@@ -37,3 +37,4 @@ void UAuraProjectileSpell::SpawnProjectile()
 		Projectile->FinishSpawning(SpawnTransform);
 	}
 }
+

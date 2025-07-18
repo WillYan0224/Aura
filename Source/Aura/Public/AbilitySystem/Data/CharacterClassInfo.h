@@ -38,7 +38,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Character Class Default")
 	TMap<ECharacterClass, FCharacterClassDefaultData> CharacterClassInfo;
-	
+	 
 	UPROPERTY(EditDefaultsOnly, Category = "Common Class Default")
 	TSubclassOf<UGameplayEffect> SecondaryAttributes;
 

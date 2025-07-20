@@ -125,14 +125,29 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 
 	FEffectProperties EffectProps;
 	SetEffectProperties(Data, EffectProps);
+
+	// Clamping Health and Mana
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
 		UE_LOG(LogTemp, Warning, TEXT("Change Health on %s, New Health: %f"), *GetNameSafe(EffectProps.TargetAvatarActor), GetHealth());
 	}
-	else if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
 		SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
+	}
+	// Using Meta attributes to change the attributes
+	if (Data.EvaluatedData.Attribute == GetInComingDamageAttribute())
+	{
+		const float LocalInComingDamage = GetInComingDamage();
+		SetInComingDamage(0.f);
+		if (LocalInComingDamage > 0.f)
+		{
+			const float NewHealth = GetHealth() - LocalInComingDamage;
+			SetHealth(FMath::Clamp(NewHealth, 0.0f, GetMaxHealth()));
+
+			const bool bFatal = NewHealth <= 0.f;
+		}
 	}
 }
 

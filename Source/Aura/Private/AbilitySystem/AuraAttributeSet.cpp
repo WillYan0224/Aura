@@ -8,8 +8,10 @@
 #include "GameplayEffectExtension.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Net/UnrealNetwork.h"
+#include "Player/AuraPlayerController.h"
 
 UAuraAttributeSet::UAuraAttributeSet()
 {
@@ -108,7 +110,7 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 		}
 		if (Props.SourceController)
 		{
-			ACharacter* SourceCharacter = Cast<ACharacter>(Props.SourceController->GetPawn());
+			Props.SourceCharacter = Cast<ACharacter>(Props.SourceController->GetPawn());
 		}
 	}
 	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
@@ -163,6 +165,20 @@ void UAuraAttributeSet::PostGameplayEffectExecute(const struct FGameplayEffectMo
 				TagContainer.AddTag(FAuraGameplayTags::Get().Effect_HitReact);
 				EffectProps.TargetAbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
 			}
+
+			ShowFloatingDamageText(EffectProps, LocalInComingDamage);
+		}
+	}
+}
+
+void UAuraAttributeSet::ShowFloatingDamageText(const FEffectProperties& EffectProps, float Damage) const
+{
+	if (EffectProps.SourceCharacter != EffectProps.TargetCharacter)
+	{
+		if (AAuraPlayerController* PlayerController = Cast<AAuraPlayerController>(UGameplayStatics::GetPlayerController(EffectProps.SourceCharacter, 0)))
+		{
+			PlayerController->ShowDamageNumbers(EffectProps.TargetCharacter, Damage);
+					
 		}
 	}
 }

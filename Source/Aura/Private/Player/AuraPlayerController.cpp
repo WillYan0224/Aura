@@ -41,8 +41,8 @@ void AAuraPlayerController::ShowDamageNumbers_Implementation(ACharacter* TargetC
 		UDamageTextComponent* DamageTextComponent = NewObject<UDamageTextComponent>(TargetCharacter, DamageTextComponentClass);
 		DamageTextComponent->RegisterComponent();
 		DamageTextComponent->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-		DamageTextComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 		DamageTextComponent->SetDamageText(DamageAmount);
+		DamageTextComponent->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	}
 }
 

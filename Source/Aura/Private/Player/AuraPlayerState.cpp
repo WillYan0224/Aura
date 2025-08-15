@@ -16,7 +16,7 @@ AAuraPlayerState::AAuraPlayerState()
 	AttributeSet = CreateDefaultSubobject<UAuraAttributeSet>("AttributeSet");
 	
 	// Update server (Sync up server version usually 100?)
-	NetUpdateFrequency = 100.f;
+	SetNetUpdateFrequency(100.0f);
 
 	
 }

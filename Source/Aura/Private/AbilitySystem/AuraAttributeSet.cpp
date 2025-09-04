@@ -93,6 +93,7 @@ void UAuraAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 	FEffectProperties& Props) const
 {
 	// Source = causer
+	
 	Props.ActiveContextHandle = Data.EffectSpec.GetContext();
 	Props.SourceAbilitySystemComponent = Props.ActiveContextHandle.GetOriginalInstigatorAbilitySystemComponent();
 

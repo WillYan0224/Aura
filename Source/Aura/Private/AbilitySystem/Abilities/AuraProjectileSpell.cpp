@@ -63,4 +63,3 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 		Projectile->FinishSpawning(SpawnTransform);
 	}
 }
-

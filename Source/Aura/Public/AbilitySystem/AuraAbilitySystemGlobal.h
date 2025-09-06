@@ -10,7 +10,7 @@
  * 
  */
 UCLASS()
-class AURA_API UAuraAbilitySystemGlobal : public UAbilitySystemGlobals
+class AURA_API UAuraAbilitySystemGlobals : public UAbilitySystemGlobals
 {
 	GENERATED_BODY()
 

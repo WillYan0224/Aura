@@ -24,6 +24,9 @@ struct FCharacterClassDefaultData
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CharacterClass Default")
 	TSubclassOf<UGameplayEffect> PrimaryAttributes;
+
+	UPROPERTY(EditDefaultsOnly, Category = "CharacterClass Default")
+	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 	
 };
 

@@ -30,7 +30,7 @@ public:
 	static void InitializeDefaultAttribute(const UObject* WorldContextObject, UAbilitySystemComponent* AbilitySystemComponent, ECharacterClass CharacterClass, float level);
 
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemBlueprintLibrary|CharacterClassDefault")
-	static void GiveStartUpAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* AbilitySystemComponent);
+	static void GiveStartUpAbilities(const UObject* WorldContextObject, UAbilitySystemComponent* AbilitySystemComponent, ECharacterClass CharacterClass);
 
 	UFUNCTION(BlueprintCallable, Category = "AuraAbilitySystemBlueprintLibrary|CharacterClassDefault")
 	static UCharacterClassInfo *GetCharacterClassInfo(const UObject* WorldContextObject);

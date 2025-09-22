@@ -81,7 +81,7 @@ void AAuraEnemy::BeginPlay()
 	InitAbilityActorInfo();
 	if (HasAuthority())
 	{
-		UAuraAbilitySystemLibrary::GiveStartUpAbilities(this, AbilitySystemComponent);
+		UAuraAbilitySystemLibrary::GiveStartUpAbilities(this, AbilitySystemComponent, CharacterClass);
 	}
 	
 	// Setting up Widget controller

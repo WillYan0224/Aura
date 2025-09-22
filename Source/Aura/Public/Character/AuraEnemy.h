@@ -49,12 +49,17 @@ public:
 	float BaseWalkSpeed = 258.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
-	float LifeSpan = 258.f;
+	float LifeSpan = 5.f;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Combat")
+	TObjectPtr<AActor> CombatTarget;
 	
 protected:
 	virtual void BeginPlay() override;
 	virtual void InitAbilityActorInfo();
 	virtual void InitializeDefaultAttributes() const override;
+	virtual void SetCombatTarget_Implementation(AActor* InCombatTarget) override;
+	virtual AActor* GetCombatTarget_Implementation() const override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Widget Components")
 	TObjectPtr<UWidgetComponent> HealthBar;

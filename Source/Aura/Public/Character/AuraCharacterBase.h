@@ -23,10 +23,14 @@ public:
 	AAuraCharacterBase();
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
-	UAnimMontage* GetHitReactMontage_Implementation() const override;
-
+	
+	// CombatInterface
+	virtual FVector GetCombatSocketLocation_Implementation();
+	virtual AActor* GetAvatar_Implementation();
+	virtual bool IsDead_Implementation();
 	virtual void Die() override;
-
+	UAnimMontage* GetHitReactMontage_Implementation() const override;
+	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath();
 	
@@ -41,8 +45,8 @@ protected:
 	// Tip Socket for casting spell
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponTipSocketName;
-
-	virtual FVector GetCombatSocketLocation() override;
+	
+	bool bDead = false;
 	
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;

@@ -25,14 +25,18 @@ public:
 	UAttributeSet* GetAttributeSet() const { return AttributeSet; }
 	
 	// CombatInterface
-	virtual FVector GetCombatSocketLocation_Implementation();
+	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override;
 	virtual AActor* GetAvatar_Implementation();
 	virtual bool IsDead_Implementation();
 	virtual void Die() override;
 	UAnimMontage* GetHitReactMontage_Implementation() const override;
+	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
 	
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastHandleDeath();
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TArray<FTaggedMontage> AttackMontages;
 	
 protected:
 	// Called when the game starts or when spawned
@@ -45,6 +49,12 @@ protected:
 	// Tip Socket for casting spell
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponTipSocketName;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName LeftHandSocketName;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	FName RightHandSocketName;
 	
 	bool bDead = false;
 	
